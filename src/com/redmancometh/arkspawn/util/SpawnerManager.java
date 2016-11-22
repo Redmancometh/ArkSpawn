@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
+
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.util.LongHash;
@@ -13,6 +14,9 @@ import com.redmancometh.arkspawn.TieredSpawner;
 public class SpawnerManager implements Iterable<SpawnerChunk>
 {
     private Map<LongHash, SpawnerChunk> chunkMap = new HashMap();
+
+    {
+    }
 
     /**
      * Is there a spawner at this location?
@@ -93,7 +97,6 @@ public class SpawnerManager implements Iterable<SpawnerChunk>
         return chunkMap.get(LongHash.toLong(c.getX(), c.getZ())).getFromLocation(loc);
     }
 
-    
     @Override
     public Iterator<SpawnerChunk> iterator()
     {

@@ -8,10 +8,15 @@ public class TieredSpawner
 {
     private Location location;
     private SpawnerTier tier;
-
+    
     public TieredSpawner(Location location, SpawnerTier tier)
     {
         this.location = location;
+    }
+    
+    public void tick()
+    {
+        
     }
 
     public Location getLocation()
