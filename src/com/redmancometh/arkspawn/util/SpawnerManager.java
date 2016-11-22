@@ -15,7 +15,9 @@ public class SpawnerManager implements Iterable<SpawnerChunk>
 {
     private Map<LongHash, SpawnerChunk> chunkMap = new HashMap();
 
+    public void tickSpawners()
     {
+        chunkMap.values().forEach((spawnerChunk) -> spawnerChunk.forEach((spawner) -> spawner.tick()));
     }
 
     /**
