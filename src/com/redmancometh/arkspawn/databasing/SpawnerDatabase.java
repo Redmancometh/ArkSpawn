@@ -3,6 +3,7 @@ package com.redmancometh.arkspawn.databasing;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.util.LongHash;
 
 import com.redmancometh.arkshards.ArkShards;
 import com.redmancometh.arkspawn.ArkSpawn;
@@ -26,7 +28,7 @@ public class SpawnerDatabase
 
     public void createTable()
     {
-        try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement("create table if not exists spawners(id NOT NULL AUTO_INCREMENT, tier varchar(16), x int, y int, z int, cx int, cz int, world varchar(32)"))
+        try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement("create table if not exists spawners(tier varchar(16),x int,y int,z int,chunkhash bigint NOT NULL PRIMARY KEY, world varchar(32));"))
         {
             ps.execute();
         }
@@ -36,11 +38,55 @@ public class SpawnerDatabase
         }
     }
 
-    public void insertSpawnerTierCollection()
+    public CompletableFuture<Void> insertSpawnerTierCollectionAsync(Collection<TieredSpawner> spawners)
     {
-        
+        return CompletableFuture.runAsync(() ->
+        {
+            try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement("INSERT INTO spawners(tier,x,y,z,chunkhash,world) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY(UPDATE spawner SET tier=?,x=?,y=?,z=?,chunkhash=?,world=?)"))
+            {
+                spawners.forEach((spawner) -> addBatch(spawner, ps));
+                ps.execute();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }, ArkShards.getInstance().getPool());
+    }
+
+    //Pretty sure I'm gonna use this at some point
+    public void insertSpawnerTierCollectionSync(Collection<TieredSpawner> spawners)
+    {
+        try (Connection c = getConnection(); PreparedStatement ps = c.prepareStatement("INSERT INTO spawners(tier,x,y,z,chunkhash,world) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY(UPDATE spawner SET tier=?,x=?,y=?,z=?,chunkhash=?,world=?)"))
+        {
+            spawners.forEach((spawner) -> addBatch(spawner, ps));
+            ps.execute();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
     
+    public void addBatch(TieredSpawner spawner, PreparedStatement ps)
+    {
+        try
+        {
+            Location loc = spawner.getLocation();
+            ps.setString(1, spawner.getTier().getName());
+            ps.setInt(2, loc.getBlockX());
+            ps.setInt(3, loc.getBlockY());
+            ps.setInt(4, loc.getBlockZ());
+            ps.setLong(5, LongHash.toLong(loc.getChunk().getX(), loc.getChunk().getZ()));
+            ps.setString(6, loc.getWorld().getName());
+            ps.addBatch();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public void addSpawner(SpawnerTier tier, Location loc)
     {
         CompletableFuture.runAsync(() ->
@@ -60,7 +106,6 @@ public class SpawnerDatabase
             {
                 e.printStackTrace();
             }
-
         }, ArkShards.getInstance().getPool());
     }
 

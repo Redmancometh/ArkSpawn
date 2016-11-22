@@ -17,12 +17,12 @@ public class SpawnerListeners implements Listener
     @EventHandler
     public void loadSpawnersOnLoad(ChunkLoadEvent e)
     {
-        ArkSpawn.getInstance().getSpawnerDatabase().getSpawnersInChunk(e.getChunk().getX(), e.getChunk().getZ()).thenAccept((spawnerSet) -> spawnerSet.forEach((spawner) -> ArkSpawn.getInstance().getSpawnerManager().insertIntoManager(spawner)));
+        ArkSpawn.getInstance().getSpawnerDatabase().getSpawnersInChunk(e.getChunk().getX(), e.getChunk().getZ()).thenAccept((spawnerSet) -> spawnerSet.forEach((spawner) -> ArkSpawn.getInstance().getSpawnerManager().insertAtLocation(spawner)));
     }
 
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent e)
     {
-        ArkSpawn.getInstance().getSpawnerDatabase().getSpawnersInChunk(e.getChunk().getX(), e.getChunk().getZ()).thenAccept((spawnerSet) -> spawnerSet.forEach((spawner) -> ArkSpawn.getInstance().getSpawnerManager().insertIntoManager(spawner)));
+        ArkSpawn.getInstance().getSpawnerDatabase().getSpawnersInChunk(e.getChunk().getX(), e.getChunk().getZ()).thenAccept((spawnerSet) -> spawnerSet.forEach((spawner) -> ArkSpawn.getInstance().getSpawnerManager().insertAtLocation(spawner)));
     }
 }

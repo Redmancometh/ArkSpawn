@@ -4,9 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.redmancometh.arkspawn.databasing.SpawnerDatabase;
-import com.redmancometh.arkspawn.facade.SpawnerManager;
 import com.redmancometh.arkspawn.facade.TierManager;
 import com.redmancometh.arkspawn.listeners.SpawnerListeners;
+import com.redmancometh.arkspawn.util.SpawnerManager;
 
 public class ArkSpawn extends JavaPlugin
 {
