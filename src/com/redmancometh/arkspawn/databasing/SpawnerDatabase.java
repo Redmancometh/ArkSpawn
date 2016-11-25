@@ -168,6 +168,7 @@ public class SpawnerDatabase
                 ps.setString(1, uuid.toString());
                 try (ResultSet rs = ps.executeQuery())
                 {
+                    
                     if (rs.next())
                     {
                         return new AtomicInteger(rs.getInt("count"));
